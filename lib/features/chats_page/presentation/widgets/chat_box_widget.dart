@@ -1,20 +1,15 @@
 import 'package:echo_chat/core/app_images.dart';
 import 'package:echo_chat/core/app_strings.dart';
-import 'package:echo_chat/core/common_bloc_state.dart';
 import 'package:echo_chat/features/chats_page/data/entity/chat_page_model.dart';
 import 'package:echo_chat/features/chats_page/presentation/bloc/chat_page_bloc.dart';
 import 'package:echo_chat/features/chats_page/presentation/bloc/chat_page_event.dart';
-import 'package:echo_chat/features/chats_page/presentation/bloc/chat_page_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatBox extends StatelessWidget {
-  final ChatPageBloc blocInstance;
   final List<MessageModel> messages;
   final String userId;
 
   ChatBox({
-    required this.blocInstance,
     required this.messages,
     required this.userId,
     super.key,
@@ -22,6 +17,7 @@ class ChatBox extends StatelessWidget {
 
   /// Chat text editing controller
   var chatController = TextEditingController();
+  ChatPageBloc chatBloc = ChatPageBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +60,9 @@ class ChatBox extends StatelessWidget {
             flex: 1,
             child: GestureDetector(
               onTap: () {
-                messages.add(MessageModel(userId: userId, message: chatController.text));
-                blocInstance.add(SendMessageEvent(message: messages));
+                messages.add(
+                    MessageModel(userId: userId, message: chatController.text));
+                chatBloc.add(SendMessageEvent(message: messages));
               },
               child: Container(
                 padding: const EdgeInsetsDirectional.only(
@@ -79,26 +76,14 @@ class ChatBox extends StatelessWidget {
                   border: Border.all(color: Colors.white),
                   shape: BoxShape.circle,
                 ),
-                child: BlocBuilder<ChatPageBloc, ChatPageState>(
-                  bloc: blocInstance,
-                  builder: (context, ChatPageState state) {
-                    if (state.status == Status.loading) {
-                      return const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    return Transform.rotate(
-                      angle: 0.8,
-                      child: Image.asset(
-                        AppIcons.sendIcon,
-                        width: 20,
-                        height: 20,
-                        color: Colors.white,
-                      ),
-                    );
-                  },
+                child: Transform.rotate(
+                  angle: 0.8,
+                  child: Image.asset(
+                    AppIcons.sendIcon,
+                    width: 20,
+                    height: 20,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),

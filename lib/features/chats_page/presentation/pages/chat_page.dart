@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:echo_chat/core/app_strings.dart';
 import 'package:echo_chat/core/common_bloc_state.dart';
 import 'package:echo_chat/core/common_error_page.dart';
 import 'package:echo_chat/features/chats_page/data/entity/chat_page_model.dart';
@@ -8,7 +6,7 @@ import 'package:echo_chat/features/chats_page/presentation/bloc/chat_page_event.
 import 'package:echo_chat/features/chats_page/presentation/bloc/chat_page_state.dart';
 import 'package:echo_chat/features/chats_page/presentation/widgets/chat_box_widget.dart';
 import 'package:echo_chat/features/chats_page/presentation/widgets/chat_page_shimmer.dart';
-import 'package:echo_chat/features/chats_page/presentation/widgets/message_view_builder.dart';
+import 'package:echo_chat/features/chats_page/presentation/widgets/message_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,8 +20,6 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  Stream<QuerySnapshot> chatStream =
-      FirebaseFirestore.instance.collection(AppStrings.chats).snapshots();
 
   ChatPageBloc chatBloc = ChatPageBloc();
 
@@ -43,10 +39,10 @@ class _ChatPageState extends State<ChatPage> {
           return const Center(child: ChatPageShimmer());
         } else if (state.status == Status.error) {
           return const CommonErrorPage();
-        } else {
-          var chats = chatBloc.chatData;
+        } else if(state.status == Status.completed){
+          // var chats = chatBloc.chatData;
           return StreamBuilder(
-            stream: chats,
+            stream: state.data,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return const CommonErrorPage();
@@ -54,7 +50,7 @@ class _ChatPageState extends State<ChatPage> {
                 return const ChatPageShimmer();
               } else {
                 ChatPageModel data = snapshot.data! as ChatPageModel;
-                print(data.userImage1);
+                debugPrint(data.userImage1);
                 return Scaffold(
                   backgroundColor: const Color.fromRGBO(14, 27, 35, 0.5),
                   resizeToAvoidBottomInset: true,
@@ -101,15 +97,9 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                       ),
                       /// ChatBox
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          ChatBox(
-                            blocInstance: chatBloc,
-                            messages: data.messages,
-                            userId: widget.userId,
-                          ),
-                        ],
+                      ChatBox(
+                        messages: data.messages,
+                        userId: widget.userId,
                       ),
                     ],
                   ),
@@ -119,6 +109,7 @@ class _ChatPageState extends State<ChatPage> {
             },
           );
         }
+        return const SizedBox.shrink();
       },
     );
   }

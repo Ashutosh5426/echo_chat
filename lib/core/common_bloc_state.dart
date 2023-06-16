@@ -6,7 +6,7 @@ abstract class ApiState<T> {
   final T? data;
   final String? message;
   // final AppError? error;
-  final String? error;
+  final error;
 
   ApiState.loading(this.message, {this.data, this.error})
       : status = Status.loading;

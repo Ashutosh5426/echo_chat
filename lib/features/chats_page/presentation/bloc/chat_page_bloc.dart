@@ -5,10 +5,10 @@ import 'package:echo_chat/features/chats_page/data/data_source/chats_page_data_s
 import 'package:echo_chat/features/chats_page/data/entity/chat_page_model.dart';
 import 'package:echo_chat/features/chats_page/presentation/bloc/chat_page_event.dart';
 import 'package:echo_chat/features/chats_page/presentation/bloc/chat_page_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatPageBloc extends Bloc<ChatPageEvent, ChatPageState> {
-  var chatData;
   late String userId;
 
   ChatPageBloc() : super(ChatState.loading()) {
@@ -19,9 +19,9 @@ class ChatPageBloc extends Bloc<ChatPageEvent, ChatPageState> {
   FutureOr<void> _fetchChatsEventToState(FetchChatsEvent event, emit) async {
     emit(ChatState.loading());
     userId = event.props[0].toString();
-    chatData = ChatsPageDataSource().getChatsDetails();
-    print(chatData);
-    emit(ChatState.completed());
+    Stream<ChatPageModel>? chatData = ChatsPageDataSource().getChatsDetails();
+    debugPrint(chatData.toString());
+    emit(ChatState.completed(chatData));
   }
 
   FutureOr<void> _sendMessageEventToState(SendMessageEvent event, emit) async {
@@ -35,14 +35,12 @@ class ChatPageBloc extends Bloc<ChatPageEvent, ChatPageState> {
 
     db
         .update({"message": parseToJson(messages)})
-        .then((_) => print("Database updated successfully."))
+        .then((_) => debugPrint("Database updated successfully."))
         .catchError((error) {
-          print("ERROR: $error");
+          debugPrint("ERROR: $error");
         });
 
-    await Future.delayed(const Duration(seconds: 2), () {
       emit(SendMessageState.completed());
-    });
   }
 
   List<Map<String, dynamic>> parseToJson(List<MessageModel> messages) {

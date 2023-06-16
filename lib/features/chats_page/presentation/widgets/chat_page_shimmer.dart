@@ -6,7 +6,7 @@ class ChatPageShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: const Color.fromRGBO(14, 27, 35, 0.5),
+      backgroundColor: Color.fromRGBO(14, 27, 35, 0.5),
       body: Center(child: CircularProgressIndicator()),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:echo_chat/core/common_bloc_state.dart';
+import 'package:echo_chat/features/chats_page/data/entity/chat_page_model.dart';
 
 abstract class ChatPageState extends ApiState{
   ChatPageState.completed([super.data]) : super.completed();
@@ -13,7 +14,7 @@ class ChatState extends ChatPageState{
 
   ChatState.loading() : super.loading();
 
-  ChatState.completed() : super.completed();
+  ChatState.completed(Stream<ChatPageModel>? chatDetails) : super.completed(chatDetails);
 
   ChatState.error(String error) : super.error(error);
 

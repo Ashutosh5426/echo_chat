@@ -1,5 +1,5 @@
 abstract class AppImages{
-
+  static const String appLogo = 'assets/images/echo_logo.png';
 }
 
 abstract class AppIcons{
